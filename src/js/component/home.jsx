@@ -1,52 +1,83 @@
 import React, { useState, useEffect } from "react";
 
-
 function Home() {
 	const [tasks, setTasks] = useState([]);
-
-	const deleteTask = (indexToDelete) => {
-		setTasks((prevTasks) => prevTasks.filter((task, index) => index !== indexToDelete));
-	};
-
-	useEffect(() => {
-		fetch("https://playground.4geeks.com/apis/fake/todos/user/Santi-Quijano", {
+	let nextTaskId = 1;
+	const fetchData = () => {
+		fetch(url, {
 			method: "GET",
 			headers: {
-				"Content-Type": "application/json"
-			}
+				"Content-Type": "application/json",
+
+			},
 		})
-			.then(resp => {
-				console.log(resp.ok); // will be true if the response is successfull
-				console.log(resp.status); // the status code = 200 or code = 400 etc.
-				console.log(resp.text()); // will try return the exact result as string
-				return resp.json(); // (returns promise) will try to parse the result as json as return a promise that you can .then for results
+			.then((response) => response.json())
+			.then((data) => {
+				setTasks(data);
 			})
-			.then(data => {
-				//here is where your code should start after the fetch finishes
-				setTasks(data)
-				console.log(data); //this will print on the console the exact object received from the server
-			})
-			.catch(error => {
-				//error handling
+			.catch((error) => {
 				console.log(error);
 			});
+	};
+	useEffect(() => {
+		fetchData();
 	}, []);
 
+	const addTask = (newTask) => {
+		const newTaskWithId = { id: nextTaskId++, task: newTask };
+		fetch(url, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
 
+			},
+			body: JSON.stringify([...tasks, newTaskWithId]),
+		})
+			.then(() => fetchData())
+			.catch((error) => {
+				console.log(error);
+			});
+	};
 
+	const deleteTask = (taskId) => {
+		const updatedTasks = tasks.filter((task) => task.id !== taskId);
+		fetch(url, {
+			method: PUT,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(updatedTasks),
+		})
+			.then(() => fetchData())
+			.catch((error) => {
+				console.log(error);
+			});
+	};
 
-
+	const deleteAllTasks = () => {
+		fetch(url, {
+			method: "PUT",
+			headers: {
+				"Content-Type": "applications/json",
+			},
+			body: JSON.stringify([]),
+		})
+			.then(() => fetchData())
+			.catch((error) => {
+				console.log(error);
+			});
+	};
 
 	return (
 		<div className="container">
 			<h1 className="text-muted">todos</h1>
-			<input type="text" placeholder="What needs to be done?" onKeyDown={(e) => { if (e.code === "Enter") setTasks([e.target.value, ...tasks]); }} />
+			<input type="text" placeholder="What needs to be done?" onKeyDown={(e) => { if (e.code === "Enter") addTask(e.target.value); }} />
 			<ul>
 				{tasks.length === 0 && <li>No tasks, add a task pressing Enter</li>}
-				{tasks.map((task, index) => (
-					<li key={index}>
-						<p>{task}</p>
-						<button className="erase" onClick={() => deleteTask(index)}>X</button>
+				{tasks.map((task) => (
+					<li key={task.id}>
+						<p>{task.task}</p>
+						<button className="erase" onClick={() => deleteTask(task.id)}>X</button>
 					</li>
 				))}
 				<li className="list-group-item fontSizeSmall">{tasks.length === 1 ? "1 item" : `${tasks.length} items`}</li>
@@ -56,3 +87,9 @@ function Home() {
 	);
 }
 export default Home; 
+
+
+
+
+
+}
