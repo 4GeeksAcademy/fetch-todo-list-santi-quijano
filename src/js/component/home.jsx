@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 
 function Home() {
 	const [tasks, setTasks] = useState([]);
+
 	let nextTaskId = 1;
+
 	const fetchData = () => {
-		fetch(url, {
-			method: "GET",
+		fetch("https://playground.4geeks.com/apis/fake/todos/user/Santi-Quijano", {
 			headers: {
 				"Content-Type": "application/json",
-
 			},
 		})
 			.then((response) => response.json())
@@ -25,7 +25,7 @@ function Home() {
 
 	const addTask = (newTask) => {
 		const newTaskWithId = { id: nextTaskId++, task: newTask };
-		fetch(url, {
+		fetch("https://playground.4geeks.com/apis/fake/todos/user/Santi-Quijano", {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
@@ -41,21 +41,21 @@ function Home() {
 
 	const deleteTask = (taskId) => {
 		const updatedTasks = tasks.filter((task) => task.id !== taskId);
-		fetch(url, {
+		fetch("https://playground.4geeks.com/apis/fake/todos/user/Santi-Quijano", {
 			method: PUT,
 			headers: {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(updatedTasks),
 		})
-			.then(() => fetchData())
+			.then(() => setTasks(updatedTasks))
 			.catch((error) => {
 				console.log(error);
 			});
 	};
 
 	const deleteAllTasks = () => {
-		fetch(url, {
+		fetch("https://playground.4geeks.com/apis/fake/todos/user/Santi-Quijano", {
 			method: "PUT",
 			headers: {
 				"Content-Type": "applications/json",
@@ -86,10 +86,9 @@ function Home() {
 		</div>
 	);
 }
-export default Home; 
+export default Home;
 
 
 
 
 
-}
