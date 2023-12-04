@@ -63,7 +63,7 @@ function Home() {
             />
 
             <ul>
-                {tasks.length === 0 && <li>No tasks, add a task pressing Enter.</li>}
+                {tasks.length === 0 && <li className="text-muted">No tasks, add a task pressing Enter.</li>}
                 {tasks.map((task) => (
                     <li key={task.id}>
                         <p>{task.label}</p>
@@ -76,7 +76,7 @@ function Home() {
                     {tasks.length === 1 ? "1 item" : `${tasks.length} items`}
                 </li>
             </ul>
-            <button className="deleteEverything" onClick={eraseAllTasks}>Delete Everything</button>
+            <button className="delete-everything" onClick={eraseAllTasks}>Delete Everything</button>
         </div>
     )
 }

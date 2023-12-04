@@ -51,3 +51,9 @@ li:hover .erase {
 }
 
 
+.delete-everything {
+    background-color: burlywood;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+}
