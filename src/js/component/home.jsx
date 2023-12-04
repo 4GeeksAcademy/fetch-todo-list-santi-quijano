@@ -3,53 +3,65 @@ import React, { useState, useEffect } from "react";
 function Home() {
     const [tasks, setTasks] = useState([]);
 
-    const deleteTask = (taskId) => {
+    const deleteTask = async (taskId) => {
         const updatedTasks = tasks.filter((task) => task.id !== taskId)
         setTasks(updatedTasks);
-        updateTasksOnServer(updatedTasks);
-    };
-
-    const updateTasksOnServer = (updatedTasks) => {
-        fetch("https://playground.4geeks.com/apis/fake/todos/user/Santi-Quijano", {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(updatedTasks),
-        })
-            .then((resp) => resp.json())
-            .then((data) => console.log(data))
-            .catch((error) => console.log(error));
-    };
-
-    const addTask = (taskLabel) => {
-        const newTask = { id: tasks.length + 1, label: taskLabel, done: false };
-        const updatedTasks = [...tasks, newTask];
-        setTasks(updatedTasks);
-        updateTasksOnServer(updatedTasks);
-    }
-
-    const eraseAllTasks = () => {
-        setTasks([]);
-        updateTasksOnServer([]);
+        await updateTasksOnServer(updatedTasks);
     };
 
     useEffect(() => {
-        fetch("https://playground.4geeks.com/apis/fake/todos/user/Santi-Quijano", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        })
-            .then((response) => {
+        const getData = async () => {
+            try {
+                const response = await fetch("https://playground.4geeks.com/apis/fake/todos/user/Santi-Quijano", {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
                 if (!response.ok) {
-                    throw new Error("Failed to fetch data");
+                    throw new Error("Failed to Fetch Data");
                 }
-                else return response.json();
-            })
-            .then((data) => setTasks(data))
-            .catch((error) => console.log(error));
+                const data = await response.json();
+                setTasks(data);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        getData();
     }, []);
+
+
+    const updateTasksOnServer = async (updatedTasks) => {
+        try {
+            const response = await fetch("https://playground.4geeks.com/apis/fake/todos/user/Santi-Quijano", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedTasks),
+            });
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+
+
+    const addTask = async (taskLabel) => {
+        const newTask = { id: tasks.length + 1, label: taskLabel, done: false };
+        const updatedTasks = [...tasks, newTask];
+        setTasks(updatedTasks);
+        await updateTasksOnServer(updatedTasks);
+    }
+
+    const eraseAllTasks = async () => {
+        setTasks([]);
+        await updateTasksOnServer([]);
+    };
+
+
 
     return (
         <div className="container">
